@@ -1,0 +1,58 @@
+import sys
+import os
+# os.environ["KIVY_NO_CONSOLELOG"] = '1'
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(os.path.dirname(sys.argv[0]))
+
+    return os.path.join(base_path, relative_path)
+
+from kivy.config import Config
+Config.set('kivy', 'exit_on_escape', '0')
+
+from kivy.core.window import Window
+from kivy.resources import resource_add_path
+from kivy.uix.screenmanager import ScreenManager, FadeTransition
+from kivy.app import App
+
+{resource_add_paths}
+
+
+class {app_camel}(App):
+
+    name = "{app_name}"
+    title = "{app_name}"
+
+    def build(self):
+        {screen_imports}
+        
+        self.root = ScreenManager()
+        {screen_class_definitions}
+        self.screens = {{
+            {screens_dict}
+        }}
+        self.screen_history = []
+        Window.bind(on_key_up=self.back_button)
+        Window.softinput_mode = "below_target"
+        self.root.transition = FadeTransition()
+        self.switch_screen("{first_screen}")
+
+    def switch_screen(self, screen_name):
+        self.root.switch_to(self.screens.get(screen_name))
+        self.screen_history.append(screen_name)
+
+    def back_button(self, instance, keyboard, *args):
+        if keyboard in (1001, 27):
+            self.screen_history.pop()
+            if self.screen_history != []:
+                self.root.switch_to(self.screens.get(self.screen_history[-1]))
+            else:
+                self.stop()
+            return True
+
+
+if __name__ == "__main__":
+    {app_camel}().run()

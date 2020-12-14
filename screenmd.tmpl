@@ -1,0 +1,11 @@
+from kivymd.uix.screen import MDScreen
+from kivy.lang import Builder
+from kivymd.app import MDApp
+app = MDApp.get_running_app()
+
+
+class {screen_camel}(MDScreen):
+    pass
+
+
+Builder.load_file('{screen_snake}.kv')
